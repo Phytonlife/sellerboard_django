@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Селлер Аналитика - Дашборд{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Аналитика продаж</h1>
+        <div class="filters">
+            <select id="currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+            <select id="period" name="period">
+                <option value="day" {% if period == 'day' %}selected{% endif %}>День</option>
+                <option value="week" {% if period == 'week' %}selected{% endif %}>Неделя</option>
+                <option value="month" {% if period == 'month' %}selected{% endif %}>Месяц</option>
+                <option value="year" {% if period == 'year' %}selected{% endif %}>Год</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-title">Продажи</div>
+            <div class="metric-value">${{ total_sales|floatformat:2 }}</div>
+            <div class="metric-change positive">+12% vs пред. период</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Прибыль</div>
+            <div class="metric-value">${{ profit|floatformat:2 }}</div>
+            <div class="metric-change positive">+8% vs пред. период</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">ROI</div>
+            <div class="metric-value">{{ roi|floatformat:1 }}%</div>
+            <div class="metric-change positive">+5% vs пред. период</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Маржа</div>
+            <div class="metric-value">{{ margin|floatformat:1 }}%</div>
+            <div class="metric-change negative">-2% vs пред. период</div>
+        </div>
+    </div>
+
+    <!-- Rest of your HTML remains the same -->
+    <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Продажи</th>
+                        <th>Расходы</th>
+                        <th>Прибыль</th>
+                        <th>ROI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>01.02.2024</td>
+                        <td>$1,200</td>
+                        <td>$300</td>
+                        <td>$500</td>
+                        <td>145%</td>
+                    </tr>
+                    <tr>
+                        <td>31.01.2024</td>
+                        <td>$1,500</td>
+                        <td>$400</td>
+                        <td>$600</td>
+                        <td>150%</td>
+                    </tr>
+                    <tr>
+                        <td>30.01.2024</td>
+                        <td>$1,100</td>
+                        <td>$350</td>
+                        <td>$450</td>
+                        <td>140%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация графика
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['30.01', '31.01', '01.02'],
+                datasets: [{
+                    label: 'Продажи',
+                    data: [1100, 1500, 1200],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }, {
+                    label: 'Расходы',
+                    data: [350, 400, 300],
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Динамика продаж и расходов'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Обработчики изменения фильтров
+        document.getElementById('currency').addEventListener('change', function(e) {
+            // Здесь будет логика обновления данных при смене валюты
+            console.log('Currency changed to:', e.target.value);
+        });
+
+        document.getElementById('period').addEventListener('change', function(e) {
+            // Здесь будет логика обновления данных при смене периода
+            console.log('Period changed to:', e.target.value);
+        });
+    </script>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Your existing JavaScript code
+    
+    // Update the period change handler
+    document.getElementById('period').addEventListener('change', function(e) {
+        window.location.href = '?period=' + e.target.value;
+    });
+</script>
+{% endblock %}
